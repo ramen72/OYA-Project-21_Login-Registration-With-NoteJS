@@ -1,5 +1,34 @@
-let registrationController = (req, res) => {
+const nodemailer = require("nodemailer");
+const bcrypt = require("bcryptjs");
+
+let registrationController = async (req, res) => {
   let { username, email, password, confirmPassword } = req.body;
+
+  // **********************************
+  // Create a test account or replace with real credentials.
+  let verificationCode = Math.floor(Math.random() * 1000000);
+  const transporter = nodemailer.createTransport({
+    host: "mail.devsramen.com",
+    port: 587,
+    secure: false, // true for 465, false for other ports
+    auth: {
+      user: "erp@devsramen.com",
+      pass: "utYn[UX41-kcs02~",
+    },
+  });
+
+  const info = await transporter.sendMail({
+    from: '"TODO APP" <erp@devsramen.com>',
+    to: email,
+    subject: "Verify your Email",
+    text: "Hello", // plain‑text body
+    html: `<h2>Your Verification Code is ${verificationCode}</h2> <br> <a href='#'>Click</a>`, // HTML body
+  });
+
+  console.log("Message sent:", info.messageId);
+
+  // **********************************
+
   let errors = {
     username: "",
     email: "",
@@ -27,6 +56,9 @@ let registrationController = (req, res) => {
   } else if (password !== confirmPassword) {
     errors.confirmPassword = "ConfirmPassword Not match !";
   }
+
+  let hash = await bcrypt.hash(password, 10);
+
   // *****************************************************
 
   if (
@@ -35,11 +67,19 @@ let registrationController = (req, res) => {
     errors.password === "" &&
     errors.confirmPassword === ""
   ) {
-    res.send({ success: "Registration is successfully" });
+    transporter.sendMail();
+    // res.send({ success: "Your Registration is done successfully" });
+    res.send({
+      success: {
+        username: username,
+        email: email,
+        password: hash,
+      },
+    });
   } else {
     res.send({ Errors: errors });
   }
 };
 module.exports = registrationController;
 
-// Read up = 18:10
+// Read up = class-78 (All)
