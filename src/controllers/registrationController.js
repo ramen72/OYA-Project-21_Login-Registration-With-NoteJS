@@ -1,5 +1,6 @@
 const nodemailer = require("nodemailer");
 const bcrypt = require("bcryptjs");
+const registrationSchema = require("../model/registrationSchema");
 
 let registrationController = async (req, res) => {
   let { username, email, password, confirmPassword } = req.body;
@@ -79,6 +80,15 @@ let registrationController = async (req, res) => {
   } else {
     res.send({ Errors: errors });
   }
+
+  // send to database
+  let data = new registrationSchema({
+    username: username,
+    email: email,
+    password: password,
+  });
+  data.save();
+  res.send(data);
 };
 module.exports = registrationController;
 
