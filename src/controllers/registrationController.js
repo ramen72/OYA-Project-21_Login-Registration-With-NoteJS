@@ -25,7 +25,7 @@ let registrationController = async (req, res) => {
     html: `<h2>Your Verification Code is ${verificationCode}</h2> <br> <a href='#'>Click</a>`, // HTML body
   });
 
-  console.log("Message sent:", info.messageId);
+  // console.log("Message sent:", info.messageId);
 
   // **********************************
 
