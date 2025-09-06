@@ -8,25 +8,6 @@ let registrationController = async (req, res) => {
   // **********************************
   // Create a test account or replace with real credentials.
   let verificationCode = Math.floor(Math.random() * 1000000);
-  const transporter = nodemailer.createTransport({
-    host: "mail.devsramen.com",
-    port: 587,
-    secure: false, // true for 465, false for other ports
-    auth: {
-      user: "erp@devsramen.com",
-      pass: "utYn[UX41-kcs02~",
-    },
-  });
-
-  const info = await transporter.sendMail({
-    from: '"TODO APP" <erp@devsramen.com>',
-    to: email,
-    subject: "Verify your Email",
-    text: "Hello", // plain‑text body
-    html: `<h2>Your Verification Code is ${verificationCode}</h2> <br> <a href='#'>Click</a>`, // HTML body
-  });
-
-  // console.log("Message sent:", info.messageId);
 
   // **********************************
 
@@ -68,27 +49,37 @@ let registrationController = async (req, res) => {
     errors.password === "" &&
     errors.confirmPassword === ""
   ) {
-    transporter.sendMail();
-    // res.send({ success: "Your Registration is done successfully" });
-    res.send({
-      success: {
-        username: username,
-        email: email,
-        password: hash,
+    const transporter = nodemailer.createTransport({
+      host: "mail.devsramen.com",
+      port: 587,
+      secure: false, // true for 465, false for other ports
+      auth: {
+        user: "erp@devsramen.com",
+        pass: "utYn[UX41-kcs02~",
       },
     });
+
+    const info = await transporter.sendMail({
+      from: "TODO APP",
+      to: email,
+      subject: "Verify your Email",
+      text: "Hello", // plain‑text body
+      html: `<h2>Your Verification Code is ${verificationCode}</h2> <br> <a href='#'>Click</a>`, // HTML body
+    });
+
+    console.log("Message sent:", info.messageId);
+
+    // res.send({ success: "Your Registration is done successfully" });
+    let data = new registrationSchema({
+      username: username,
+      email: email,
+      password: password,
+    });
+    data.save();
+    res.send(data);
   } else {
     res.send({ Errors: errors });
   }
-
-  // send to database
-  let data = new registrationSchema({
-    username: username,
-    email: email,
-    password: password,
-  });
-  data.save();
-  res.send(data);
 };
 module.exports = registrationController;
 

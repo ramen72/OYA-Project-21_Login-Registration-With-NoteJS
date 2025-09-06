@@ -19,7 +19,10 @@ app.use(express.json());
 
 app.post("/login", loginController);
 app.post("/registration", registrationController);
-app.get("/users", usersController);
+app.get("/usersList", usersController.usersList);
+app.get("/findUser", usersController.findUser);
+app.put("/userUpdate", usersController.userUpdateById);
+app.delete("/userDelete", usersController.userDeleteById);
 
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
